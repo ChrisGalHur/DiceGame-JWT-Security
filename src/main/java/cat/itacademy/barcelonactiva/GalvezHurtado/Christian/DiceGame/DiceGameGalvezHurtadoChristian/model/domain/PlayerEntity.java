@@ -7,10 +7,14 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
+/*@NamedQueries({
+        @NamedQuery(
+                name = "PlayerEntity.findWinner",
+                query = "SELECT players.name as winner FROM PlayerEntity INNER JOIN recount ON players.id = recount.players_id WHERE recount.win = 1 GROUP BY players.id ORDER BY SUM(recount.win) DESC LIMIT 1"
+        )
+})*/
 @Data //Getters y Setters
 @AllArgsConstructor //Constructor utilizando todos los argumentos
 @NoArgsConstructor //Constructor sin argumentos
@@ -23,15 +27,14 @@ public class PlayerEntity {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "Name")
-    private String namePlayer;
+    @Column(name = "name")
+    private String name;
 
     //@DateTimeFormat(pattern = "dd - mm - yyyy")
-    @Column(name = "Registration Date")
+    @Column(name = "registration")
     private Timestamp registrationDate;
 
     @OneToMany(mappedBy = "playerEntity", cascade = CascadeType.ALL)
     //@JoinColumn(name = "recount_id", referencedColumnName = "id")
     private List<DataPlayerEntity> dataPlayer = new ArrayList<>();
-
 }

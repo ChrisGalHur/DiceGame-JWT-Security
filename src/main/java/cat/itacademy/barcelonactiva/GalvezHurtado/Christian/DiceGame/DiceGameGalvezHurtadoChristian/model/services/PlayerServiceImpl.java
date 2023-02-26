@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,31 +21,23 @@ public class PlayerServiceImpl implements PlayerService {
     private final DataPlayerServiceImpl dataPlayerServiceImpl;
 
     @Override
-    public List<PlayerDTO> getAllPlayersDTO() {
-        return playerRepository.findAll().stream()
-                .map(x -> {
-                    return modelMapper.map(x, PlayerDTO.class);
-                }).collect(Collectors.toList());
+    public Optional<List<Object>> findAllWithPercentage() {
+        return playerRepository.findAllWithPercentage();
     }
 
     @Override
-    public void savePlayer(PlayerEntity playerEntity) {
-        this.playerRepository.save(playerEntity);
+    public void savePlayer(PlayerDTO playerDTO) {
+        this.playerRepository.save(modelMapper.map(playerDTO, PlayerEntity.class));
     }
 
     @Override
-    public Optional<PlayerEntity> getPlayerByID(int id) {
-        return playerRepository.findById(id);
-    }
-
-    @Override
-    public void deletePlayerById(int id) {
-
+    public PlayerDTO getPlayerByID(int id) {
+        return modelMapper.map(playerRepository.findById(id), PlayerDTO.class);
     }
 
     @Override
     public boolean nameExists(String name) {
-        return playerRepository.findAll().stream().anyMatch(x -> x.getNamePlayer().equals(name));
+        return playerRepository.findAll().stream().anyMatch(x -> x.getName().equals(name));
     }
 
     @Override
@@ -54,10 +45,10 @@ public class PlayerServiceImpl implements PlayerService {
         return playerRepository.existsById(idPlayer);
     }
 
-    /*@Override
-    public void deletePlayerHistory(int idPlayer) {
-        dataPlayerServiceImpl.   ;
-    }*/
+    @Override
+    public void deleteHistoryPlayer(int idPlayer) {
+        playerRepository.deleteHistoryPlayer(idPlayer);
+    }
 
     @Override
     public boolean play(PlayerEntity playerEntity) {
@@ -71,16 +62,22 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Optional<PlayerEntity> findWinner(){
-        return playerRepository.findWinner();
-    }
-    /*@Override
-    public String getLoser() {
-        return playerRepository.getLoser();
+    public Optional<List<Object>> findWinner(){
+            return playerRepository.findByWinner();
     }
 
     @Override
-    public String getWinner() {
-        return playerRepository.getWinner();
-    }*/
+    public Optional<List<Object>> findLoser() {
+        return playerRepository.findByLoser();
+    }
+
+    @Override
+    public Optional<List<Object>> findHistoryPlayer(int idPlayer) {
+        return playerRepository.findHistoryPlayer(idPlayer);
+    }
+
+    @Override
+    public Optional<Object> getTotalAverage() {
+        return playerRepository.getTotalAverage();
+    }
 }

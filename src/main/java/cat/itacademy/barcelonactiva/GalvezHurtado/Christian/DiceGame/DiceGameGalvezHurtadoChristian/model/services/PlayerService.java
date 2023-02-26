@@ -8,23 +8,28 @@ import java.util.Optional;
 
 public interface PlayerService {
 
-    List<PlayerDTO> getAllPlayersDTO();
+    //Encontrar
+    Optional<List<Object>> findHistoryPlayer(int idPlayer);
 
-    void savePlayer(PlayerEntity playerEntity);
+    void savePlayer(PlayerDTO playerDTO);
 
-    Optional<PlayerEntity> getPlayerByID(int id);
-
-    void deletePlayerById(int id);
-
-    boolean nameExists(String name);
+    PlayerDTO getPlayerByID(int id);
 
     boolean existById(int idPlayer);
 
+    boolean nameExists(String name);
+
+    Optional<List<Object>> findWinner();
+
+    Optional<List<Object>> findLoser();
+
+    Optional<List<Object>> findAllWithPercentage();
+
+    //Guardar y modificar
     boolean play(PlayerEntity playerEntity);
 
-    /*Optional<List<DataPlayerEntity>> findWinner(String idPlayer);*/
+    //Eliminar
+    void deleteHistoryPlayer(int idPlayer);
 
-    /*String getLoser();*/
-
-    Optional<PlayerEntity> findWinner();
+    Optional<Object> getTotalAverage();
 }
