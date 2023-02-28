@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -90,7 +91,7 @@ public class PlayerController {
         return new ResponseEntity<Optional<List<Object>>>(playerWinner, HttpStatus.OK);
     }
 
-    @GetMapping("/ranking/loser") //ENTY/DTO ?
+    @GetMapping("/ranking/loser")//ENTY/DTO ?
     public ResponseEntity<Optional<List<Object>>> getLoser(){
         Optional<List<Object>> playerLoser = playerServiceImpl.findLoser();
 
