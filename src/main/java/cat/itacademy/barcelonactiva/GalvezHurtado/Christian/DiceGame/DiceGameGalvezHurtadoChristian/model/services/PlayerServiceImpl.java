@@ -6,11 +6,12 @@ import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGal
 import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.dto.PlayerDTO;
 import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.repository.PlayerRepository;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,9 +21,17 @@ public class PlayerServiceImpl implements PlayerService {
     private final ModelMapper modelMapper;
     private final DataPlayerServiceImpl dataPlayerServiceImpl;
 
+    public void deleteAll() {
+        playerRepository.deleteAll();
+    }
     @Override
-    public Optional<List<Object>> findAllWithPercentage() {
-        return playerRepository.findAllWithPercentage();
+    public List<PlayerDTO> findAllWithPercentage() {
+        List<PlayerDTO> playersDTO = playerRepository.findAll().stream()
+                .map(x -> {
+                    return modelMapper.map(x, PlayerDTO.class);
+                }).collect(Collectors.toList());
+
+        return playersDTO;
     }
 
     @Override
@@ -31,27 +40,33 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public PlayerDTO getPlayerByID(int id) {
-        return modelMapper.map(playerRepository.findById(id), PlayerDTO.class);
+    public PlayerDTO getPlayerByIdPlayer(String id) {
+        return modelMapper.map(playerRepository.findByIdPlayer(id), PlayerDTO.class);
     }
 
     @Override
     public boolean nameExists(String name) {
-        return playerRepository.findAll().stream().anyMatch(x -> x.getName().equals(name));
+        try{
+            return playerRepository.findAll().stream().anyMatch(x -> x.getNamePlayer().equals(name));
+        }catch (NullPointerException nullPointerException) {
+            return false;
+        }
     }
 
     @Override
-    public boolean existById(int idPlayer) {
-        return playerRepository.existsById(idPlayer);
+    public boolean existByIdPlayer(String idPlayer) {
+        return playerRepository.existsByIdPlayer(idPlayer);
     }
 
-    @Override
+    /*@Override
     public void deleteHistoryPlayer(int idPlayer) {
         playerRepository.deleteHistoryPlayer(idPlayer);
-    }
+    }*/
 
     @Override
-    public boolean play(PlayerEntity playerEntity) {
+    public boolean play(PlayerDTO playerDTO) {
+
+        PlayerEntity playerEntity = modelMapper.map(playerDTO, PlayerEntity.class);
         int[] game = Game.roll();
         boolean resultPlay = game[0] + game[1] == 7;
 
@@ -62,22 +77,22 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Optional<List<Object>> findWinner(){
-            return playerRepository.findByWinner();
+    public List<String> findWinner(){
+            return playerRepository.findNamePlayerByDataPlayerWinOrderByDataPlayerWinDesc();
     }
 
-    @Override
-    public Optional<List<Object>> findLoser() {
-        return playerRepository.findByLoser();
-    }
+    /*@Override
+    public Object findLoser() {
+        return playerRepository.findNameByDataPlayerEntityFindByTopByOrderByWinDesc();
+    }*/
 
-    @Override
+    /*@Override
     public Optional<List<Object>> findHistoryPlayer(int idPlayer) {
         return playerRepository.findHistoryPlayer(idPlayer);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public Optional<Object> getTotalAverage() {
         return playerRepository.getTotalAverage();
-    }
+    }*/
 }

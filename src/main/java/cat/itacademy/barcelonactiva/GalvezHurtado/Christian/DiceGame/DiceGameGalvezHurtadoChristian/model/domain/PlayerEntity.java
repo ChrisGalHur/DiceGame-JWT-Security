@@ -4,37 +4,29 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
+import org.hibernate.annotations.Type;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/*@NamedQueries({
-        @NamedQuery(
-                name = "PlayerEntity.findWinner",
-                query = "SELECT players.name as winner FROM PlayerEntity INNER JOIN recount ON players.id = recount.players_id WHERE recount.win = 1 GROUP BY players.id ORDER BY SUM(recount.win) DESC LIMIT 1"
-        )
-})*/
-@Data //Getters y Setters
-@AllArgsConstructor //Constructor utilizando todos los argumentos
-@NoArgsConstructor //Constructor sin argumentos
-@Entity
-@Table(name = "players")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Document(collection = "Players")
 public class PlayerEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private int id;
+    private ObjectId idPlayer;
 
-    @Column(name = "name")
-    private String name;
+    private String namePlayer;
 
-    //@DateTimeFormat(pattern = "dd - mm - yyyy")
-    @Column(name = "registration")
-    private Timestamp registrationDate;
+    @Field(name = "registrationDate")
+    private LocalDate registrationDate;
 
-    @OneToMany(mappedBy = "playerEntity", cascade = CascadeType.ALL)
-    //@JoinColumn(name = "recount_id", referencedColumnName = "id")
     private List<DataPlayerEntity> dataPlayer = new ArrayList<>();
 }
