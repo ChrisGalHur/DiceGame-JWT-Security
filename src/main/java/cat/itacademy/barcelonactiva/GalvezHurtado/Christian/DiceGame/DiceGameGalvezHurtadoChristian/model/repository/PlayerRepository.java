@@ -1,22 +1,17 @@
 package cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.repository;
 
 import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.domain.PlayerEntity;
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface PlayerRepository extends MongoRepository<PlayerEntity, Integer> {
+public interface PlayerRepository extends MongoRepository<PlayerEntity, String> {
 
-    boolean existsByIdPlayer(String idPlayer);
+    boolean existsById(String idPlayer);
 
-    Object findByIdPlayer(ObjectId idPlayer);
+    Optional<PlayerEntity> findById(String idPlayer);
 
-    /*Object findNameByDataPlayerEntityFindByTopByOrderByWinDesc();*/
-
-    Object findByNamePlayer(String name);
-
-    List<String> findNamePlayerByDataPlayerWinOrderByDataPlayerWinDesc();
+    //List<String> findNamePlayerByDataPlayerResultOrderByDataPlayerResultDesc();
 }

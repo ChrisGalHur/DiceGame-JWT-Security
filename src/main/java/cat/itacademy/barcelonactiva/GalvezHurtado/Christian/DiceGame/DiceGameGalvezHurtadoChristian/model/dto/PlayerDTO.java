@@ -1,25 +1,29 @@
 package cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.dto;
 
 import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.domain.DataPlayerEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class PlayerDTO {
 
-    private int idPlayer;
-    private String namePlayer;
-    private Timestamp registrationDate = Timestamp.from(Instant.now());
+    private String id;
+    private String name;
+    private Date registration = Timestamp.from(Instant.now());
+    private List<DataPlayerEntity> dataPlayer = new ArrayList<>();
+    private double percentage;
+
+    public PlayerDTO(String name, double percent) {
+        this.name = name;
+        this.percentage = percent;
+    }
 }

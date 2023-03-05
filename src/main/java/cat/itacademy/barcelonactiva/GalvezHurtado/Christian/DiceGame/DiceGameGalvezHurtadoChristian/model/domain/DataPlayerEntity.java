@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @AllArgsConstructor
@@ -13,20 +14,18 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class DataPlayerEntity {
 
     @Id
-    private String idData;//Cambiados todos los id a String
-
+    @Field(name = "id")
+    private String id;
+    @Field(name = "Dice 1")
     private int numDice1;
-
+    @Field(name = "Dice 2")
     private int numDice2;
+    @Field(name = "result")
+    private String result;
 
-    private boolean win;
-
-    private PlayerEntity playerEntity;
-
-    public DataPlayerEntity(int numDice1, int numDice2, boolean win, PlayerEntity playerEntity) {
+    public DataPlayerEntity(int numDice1, int numDice2, String result) {
         this.numDice1 = numDice1;
         this.numDice2 = numDice2;
-        this.win = win;
-        this.playerEntity = playerEntity;
+        this.result = result;
     }
 }

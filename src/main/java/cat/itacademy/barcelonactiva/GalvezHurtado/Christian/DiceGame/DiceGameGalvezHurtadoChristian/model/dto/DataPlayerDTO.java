@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DataPlayerDTO {
 
-    private String idData;
     private int numDice1;
     private int numDice2;
-    private boolean win;
+    private String result;
     private int winPercentage;
 }

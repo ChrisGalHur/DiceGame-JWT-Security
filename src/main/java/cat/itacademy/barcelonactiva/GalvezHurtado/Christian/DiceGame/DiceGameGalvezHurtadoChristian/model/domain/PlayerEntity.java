@@ -4,14 +4,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.bson.types.ObjectId;
-import org.hibernate.annotations.Type;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -21,12 +17,13 @@ import java.util.List;
 public class PlayerEntity {
 
     @Id
-    private ObjectId idPlayer;
+    private String id;
 
-    private String namePlayer;
+    @Field(name = "name")
+    private String name;
 
-    @Field(name = "registrationDate")
-    private LocalDate registrationDate;
-
-    private List<DataPlayerEntity> dataPlayer = new ArrayList<>();
+    @Field(name = "registration")
+    private Date registration;
+    @Field(name = "history")
+    private List<DataPlayerEntity> dataPlayer;
 }

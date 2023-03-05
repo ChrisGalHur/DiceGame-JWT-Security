@@ -1,15 +1,15 @@
 package cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.services;
 
 import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.domain.PlayerEntity;
+import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.dto.DataPlayerDTO;
 import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.dto.PlayerDTO;
-import org.bson.types.ObjectId;
 
 import java.util.List;
 
 public interface PlayerService {
 
-    //Encontrar
-    /*Optional<List<Object>> findHistoryPlayer(int idPlayer);*/
+
+    List<DataPlayerDTO> findHistoryPlayer(String idPlayer);
 
     void savePlayer(PlayerDTO playerDTO);
 
@@ -17,19 +17,21 @@ public interface PlayerService {
 
     boolean nameExists(String name);
 
-    Object findWinner();
+    Object findLoser();
 
-    /*Object findLoser();*/
+    Object findWinner();
 
     List<PlayerDTO> findAllWithPercentage();
 
     boolean existByIdPlayer(String idPlayer);
 
-    //Guardar y modificar
-    boolean play(PlayerDTO playerEntity);
+    PlayerEntity findByIdPlayer(String idPlayer);
 
-    //Eliminar
+    void deleteHistoryPlayer(String idPlayer);
+
+    String play(String id);
+
     /*void deleteHistoryPlayer(int idPlayer);*/
 
-    /*Optional<Object> getTotalAverage();*/
+    double getTotalAverage();
 }
