@@ -19,6 +19,7 @@ public class PlayerDTO {
     private String id;
     private String name;
     private Date registration = Timestamp.from(Instant.now());
+    private String password;
     private List<DataPlayerEntity> dataPlayer = new ArrayList<>();
     private double percentage;
 

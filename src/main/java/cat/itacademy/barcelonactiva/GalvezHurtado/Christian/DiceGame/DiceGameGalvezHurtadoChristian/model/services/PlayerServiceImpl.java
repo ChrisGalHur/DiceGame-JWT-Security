@@ -2,34 +2,47 @@ package cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGa
 
 import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.domain.DataPlayerEntity;
 import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.domain.Game;
-import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.domain.PlayerEntity;
+import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.domain.Role;
+import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.domain.UserEntity;
 import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.dto.DataPlayerDTO;
 import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.dto.PlayerDTO;
-import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.repository.PlayerRepository;
+import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.repository.RoleRepository;
+import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class PlayerServiceImpl implements PlayerService {
 
-    private final PlayerRepository playerRepository;
+
+    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleService roleService;
+    private final RoleRepository roleRepository;
+
+    public void saveNewUser(PlayerDTO playerDTO) {
+        UserEntity userEntity = modelMapper.map(playerDTO, UserEntity.class);
+        userEntity.setPassword(passwordEncoder.encode(playerDTO.getPassword()));
+
+        Role roleUser = roleService.findByName("USER").get();
+        userEntity.setRole(Collections.singletonList(roleUser));
+        this.userRepository.save(userEntity);
+    }
 
     public void deleteAll() {
-        playerRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Override
     public List<PlayerDTO> findAllWithPercentage() {
         //Entity list
-        List<PlayerEntity> players = playerRepository.findAll();
+        List<UserEntity> players = userRepository.findAll();
 
         //Sending list and returns list DTOs only  with name and percentage
         List<PlayerDTO> playersWithPercentage = players.stream()
@@ -39,45 +52,45 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void savePlayer(PlayerDTO playerDTO) {
-        PlayerEntity player = playerRepository.findById(playerDTO.getId()).get();
+    public void updatePlayer(PlayerDTO playerDTO) {
+        UserEntity player = userRepository.findById(playerDTO.getId()).get();
         player.setName(playerDTO.getName());
-        this.playerRepository.save(player);
+        this.userRepository.save(player);
     }
 
     @Override
     public PlayerDTO getPlayerByIdPlayer(String id) {
-        Optional<PlayerEntity> playerEntity = playerRepository.findById(id);
+        Optional<UserEntity> playerEntity = userRepository.findById(id);
         PlayerDTO playerDTO =  modelMapper.map(playerEntity.get(), PlayerDTO.class);
         return playerDTO;
     }
 
     @Override
     public boolean nameExists(String name) {
-            return playerRepository.findAll().stream().anyMatch(x -> x.getName().equals(name));
+            return userRepository.findAll().stream().anyMatch(x -> x.getName().equals(name));
     }
 
     @Override
     public boolean existByIdPlayer(String idPlayer) {
-        return playerRepository.existsById(idPlayer);
+        return userRepository.existsById(idPlayer);
     }
 
     @Override
-    public PlayerEntity findByIdPlayer(String idPlayer) {
-        Optional<PlayerEntity> playerEntity = playerRepository.findById(idPlayer);
+    public UserEntity findByIdPlayer(String idPlayer) {
+        Optional<UserEntity> playerEntity = userRepository.findById(idPlayer);
         return playerEntity.get();
     }
 
     @Override
     public void deleteHistoryPlayer(String idPlayer){
-        PlayerEntity playerDeletingHistory = playerRepository.findById(idPlayer).get();
+        UserEntity playerDeletingHistory = userRepository.findById(idPlayer).get();
         playerDeletingHistory.getDataPlayer().clear();
-        playerRepository.save(playerDeletingHistory);
+        userRepository.save(playerDeletingHistory);
     }
 
     @Override
     public String play(String id) {
-        PlayerEntity playerGaming = playerRepository.findById(id).get();
+        UserEntity playerGaming = userRepository.findById(id).get();
 
         DataPlayerEntity saving = Game.roll();
 
@@ -86,7 +99,7 @@ public class PlayerServiceImpl implements PlayerService {
         }
 
         playerGaming.getDataPlayer().add(saving);
-        playerRepository.save(playerGaming);
+        userRepository.save(playerGaming);
         return saving.getResult();
     }
 
@@ -132,24 +145,27 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
 
-    //<EXTRAS>-----------------------------------------------------------
-    public PlayerDTO getPlayerAndPercentage(PlayerEntity playerEntity) {
+    //
+    public PlayerDTO getPlayerAndPercentage(UserEntity userEntity) {
         int wins = 0;
         double percent;
 
         //Separate with size list 0 and > 0 to save name
-        if(playerEntity.getDataPlayer().size() > 0) {
-            for (int i = 0; i < playerEntity.getDataPlayer().size(); i++) {
-                if (playerEntity.getDataPlayer().get(i).getResult().equals("WINNER")) {
+        if(userEntity.getDataPlayer().size() > 0) {
+            for (int i = 0; i < userEntity.getDataPlayer().size(); i++) {
+                if (userEntity.getDataPlayer().get(i).getResult().equals("WINNER")) {
                     wins++;
                 }
             }
-            percent = (((double)wins * 100) / (double) playerEntity.getDataPlayer().size());
-            return new PlayerDTO(playerEntity.getName(), percent);
+            percent = (((double)wins * 100) / (double) userEntity.getDataPlayer().size());
+            return new PlayerDTO(userEntity.getName(), percent);
         }else{
-            return new PlayerDTO(playerEntity.getName(), 0);
+            return new PlayerDTO(userEntity.getName(), 0);
         }
     }
-    //</EXTRAS>-----------------------------------------------------------
 
+    public UserEntity findByName(String name) {
+        return userRepository.findByName(name).get();
+    }
+    //</EXTRAS>-----------------------------------------------------------
 }

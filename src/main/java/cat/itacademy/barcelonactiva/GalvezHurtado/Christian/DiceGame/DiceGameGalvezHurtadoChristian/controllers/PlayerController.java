@@ -3,7 +3,10 @@ package cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGa
 import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.dto.DataPlayerDTO;
 import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.dto.Message;
 import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.dto.PlayerDTO;
+import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.security.CustomAuthenticationManager;
+import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.services.JWTGenerator;
 import cat.itacademy.barcelonactiva.GalvezHurtado.Christian.DiceGame.DiceGameGalvezHurtadoChristian.model.services.PlayerServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,25 +21,13 @@ import java.util.List;
 public class PlayerController {
 
     private final PlayerServiceImpl playerServiceImpl;
+    private final CustomAuthenticationManager customAuthenticationManager;
 
-    //<POST>-----------------------------------------------------------
-    @PostMapping("/add")//Añadir jugador ENTY/DTO V
-    public ResponseEntity<?> createPlayer(@RequestBody PlayerDTO playerDTO){
-        if(playerDTO == null){
-            playerDTO.setName("UNKNOWN");
-            playerServiceImpl.savePlayer(playerDTO);
-            return new ResponseEntity<>(new Message("Your name is: " + playerDTO.getName()),HttpStatus.OK);
-        }else if (playerServiceImpl.nameExists(playerDTO.getName())){
-            return new ResponseEntity<>(new Message("This name already exists."), HttpStatus.BAD_REQUEST);
-        }else{
-            playerServiceImpl.savePlayer(playerDTO);
-            return new ResponseEntity<>(new Message("Your name is: " + playerDTO.getName()),HttpStatus.OK);
-        }
-    }
+    private final JWTGenerator jwtGenerator;
 
-    @PostMapping("/play/{id}")//jugar partida ENTY/DTO enService
-    public ResponseEntity<?> playGame(@PathVariable("id") String id){
-
+    //region POST
+    @PostMapping("/play/{id}")//Play Game ENTY/DTO V
+    public ResponseEntity<?> playGame(@PathVariable("id") String id, HttpServletRequest request){
         if(!playerServiceImpl.existByIdPlayer(id)) {
             return new ResponseEntity<>(new Message("This Player doesn't exist."), HttpStatus.NOT_FOUND);
         }else {
@@ -44,10 +35,9 @@ public class PlayerController {
             return new ResponseEntity<>(message, HttpStatus.OK);
         }
     }
-    //</POST>-----------------------------------------------------------
+    //endregion POST
 
-
-    //<PUT>-----------------------------------------------------------
+    //region PUT
     @PutMapping("/update")//Cambiar nombre Jugador ENTY/DTO V
     public ResponseEntity<?> updatePlayer(@RequestBody PlayerDTO playerDTO){
 
@@ -61,15 +51,14 @@ public class PlayerController {
             if(playerServiceImpl.nameExists(playerDTO.getName())){
                 return new ResponseEntity<>(new Message("This name already exists."), HttpStatus.BAD_REQUEST);
             }else {
-                playerServiceImpl.savePlayer(playerDTO);
+                playerServiceImpl.updatePlayer(playerDTO);
                 return new ResponseEntity<>(new Message("Name of player has been changed to " + playerDTO.getName() + "."), HttpStatus.OK);
             }
         }
     }
-    //</PUT>-----------------------------------------------------------
+    //endregion PUT
 
-
-    //<DELETE>-----------------------------------------------------------
+    //region DELETE
     @DeleteMapping("/deleteAll")//Eliminar historial jugador ENTY/DTO V
     public ResponseEntity<?> deleteAll() {
         playerServiceImpl.deleteAll();
@@ -88,10 +77,9 @@ public class PlayerController {
             return new ResponseEntity<>(new Message("History has been deleted."), HttpStatus.OK);
         }
     }
-    //</DELETE>-----------------------------------------------------------
+    //endregion DELETE
 
-
-    //<GET>-----------------------------------------------------------
+    //region GET
     @GetMapping("/getOne/{id}")//Ver un jugador ENTY/DTO V
     public ResponseEntity<?> getOnePlayer(@PathVariable("id") String id){
 
@@ -109,7 +97,7 @@ public class PlayerController {
             return new ResponseEntity<>(new Message("This Player doesn't exist."), HttpStatus.NOT_FOUND);
         }else{
             List<DataPlayerDTO> historyPlayer = playerServiceImpl.findHistoryPlayer(idPlayer);
-            return new ResponseEntity<>(historyPlayer, HttpStatus.OK);
+            return ResponseEntity.ok(historyPlayer);
         }
     }
 
@@ -120,7 +108,7 @@ public class PlayerController {
         if(players.isEmpty()){
             return new ResponseEntity<>(new Message("There are no players."), HttpStatus.BAD_REQUEST);
         }else {
-            return new ResponseEntity<>(players, HttpStatus.OK);
+            return ResponseEntity.ok(players);
         }
     }
 
@@ -154,5 +142,5 @@ public class PlayerController {
             return new ResponseEntity<>(new Message("Don't have loser"), HttpStatus.NOT_FOUND);
         }
     }
-    //</GET>-----------------------------------------------------------
+    //endregion GET
 }
