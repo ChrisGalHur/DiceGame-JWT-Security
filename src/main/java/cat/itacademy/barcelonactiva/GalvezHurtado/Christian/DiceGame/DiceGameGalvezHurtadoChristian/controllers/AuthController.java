@@ -29,6 +29,7 @@ public class AuthController {
     private final JWTGenerator jwtGenerator;
 
 
+    //region LOGIN-REGISTER
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDTO loginDTO) {
         Authentication authentication = customAuthenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getName(), loginDTO.getPassword()));
@@ -38,12 +39,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody PlayerDTO userDTO){
-        if(userRepository.existsByName((userDTO.getName()))){
+    public ResponseEntity<String> register(@RequestBody PlayerDTO userDTO) {
+        if (userRepository.existsByName((userDTO.getName()))) {
             return new ResponseEntity<>("User already exists", HttpStatus.BAD_REQUEST);
         }
 
-        if(userDTO.getName() == null || userDTO.getName().equals("")) {
+        if (userDTO.getName() == null || userDTO.getName().equals("")) {
             userDTO.setName("UNKNOWN");
             playerServiceimpl.saveNewUser(userDTO);
             return new ResponseEntity<>("Your name is: " + userDTO.getName(), HttpStatus.OK);
@@ -52,19 +53,21 @@ public class AuthController {
         playerServiceimpl.saveNewUser(userDTO);
         return new ResponseEntity<>("User registered!", HttpStatus.OK);
     }
+    //endregion LOGIN-REGISTER
 
+    //region ROLES
     @PostMapping("/add/{pass}")
     public ResponseEntity<String> addRole(@RequestBody Role role, @PathVariable("pass") String pass) {
         final String PASSWORD = "SoloYo";
 
-        if (!pass.equals(PASSWORD)){
+        if (!pass.equals(PASSWORD)) {
             return new ResponseEntity<>("Password wrong", HttpStatus.BAD_REQUEST);
-        }else if (roleService.existsByName(role.getName())) {
+        } else if (roleService.existsByName(role.getName())) {
             return new ResponseEntity<>("Role already exists", HttpStatus.BAD_REQUEST);
-        }else if (pass.equals(PASSWORD)) {
+        } else if (pass.equals(PASSWORD)) {
             roleService.saveRole(role);
             return new ResponseEntity<>("success", HttpStatus.OK);
-        }else {
+        } else {
             return new ResponseEntity<>("failure", HttpStatus.BAD_REQUEST);
         }
     }
@@ -78,11 +81,5 @@ public class AuthController {
         }
         return new ResponseEntity<>("failure", HttpStatus.BAD_REQUEST);
     }
+    //endregion ROLES
 }
-
-
-
-
-
-
-

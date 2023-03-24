@@ -22,7 +22,6 @@ public class PlayerController {
 
     private final PlayerServiceImpl playerServiceImpl;
     private final CustomAuthenticationManager customAuthenticationManager;
-
     private final JWTGenerator jwtGenerator;
 
     //region POST
@@ -91,7 +90,7 @@ public class PlayerController {
         }
     }
 
-    @GetMapping("/getHistoryPlayer/{id}") //ENTY/DTO ?
+    @GetMapping("/getHistoryPlayer/{id}")
     public ResponseEntity<?> findByGamesPlayer(@PathVariable("id") String idPlayer){
         if (!playerServiceImpl.existByIdPlayer(idPlayer)) {
             return new ResponseEntity<>(new Message("This Player doesn't exist."), HttpStatus.NOT_FOUND);
@@ -101,7 +100,7 @@ public class PlayerController {
         }
     }
 
-    @GetMapping("/getAll")//Ver todos ENTY/DTO V
+    @GetMapping("/getAll")
     public ResponseEntity<?> getAllPlayers(){
         List<PlayerDTO> players = playerServiceImpl.findAllWithPercentage();
 
@@ -112,7 +111,7 @@ public class PlayerController {
         }
     }
 
-    @GetMapping("/ranking/totalAverage") //ENTY/DTO ?
+    @GetMapping("/ranking/totalAverage")
     public ResponseEntity<Object> getTotalAverage(){
         double totalAverage = playerServiceImpl.getTotalAverage();
         
